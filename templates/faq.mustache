@@ -1,0 +1,80 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_sponsors/sponsors
+
+    This template renders the main content area for the mcms block.
+
+    Example context (json):
+    {
+    'orgs' => [{
+           'link' => 'urllink...',
+           'logourl' => 'urllink...',
+           'name' => 'orgname'
+
+    }],
+    'count' => 1
+    }
+}}
+<div class="container">
+    <ul class="nav nav-pills mb-0" role="tablist" id="faq-{{uniqid}}">
+        {{#categories}}
+            <li class="nav-item">
+                <a class="nav-link d-flex flex-column justify-content-center p-3 pb-5" id="{{id}}-{{uniqid}}-tab" data-toggle="tab" href="#{{id}}-{{uniqid}}" role="tab"
+                   aria-controls="{{id}}-{{uniqid}}">
+                    {{#imageurl}}
+                        <img src="{{.}}" role="presentation"/>
+                    {{/imageurl}}
+                    <span class="cat-title">
+                        {{title}}
+                    </span>
+                </a>
+            </li>
+        {{/categories}}
+    </ul>
+    <div class="tab-content" id="faq-content-{{uniqid}}">
+        {{# categories}}
+            <div class="tab-pane fade" id="{{id}}-{{uniqid}}" role="tabpanel" aria-labelledby="{{id}}-{{uniqid}}-tab">
+                {{#questions}}
+                    <div class="card">
+                        <div class="card-header bg-white m-y-1" id="heading-{{id}}-{{uniqid}}">
+                            <h5>
+                                <button class="btn btn-link" data-toggle="collapse" data-target="#collapse-{{id}}-{{uniqid}}" aria-expanded="true"
+                                        aria-controls="collapse-{{id}}-{{uniqid}}">
+                                    {{text}}
+                                </button>
+                            </h5>
+                        </div>
+                        <div id="collapse-{{id}}-{{uniqid}}" class="collapse" aria-labelledby="heading-{{id}}-{{uniqid}}" data-parent="#faq-content-{{uniqid}}">
+                            <div class="card-body">
+                                {{{answer}}}
+                            </div>
+                        </div>
+                    </div>
+                {{/questions}}
+            </div>
+        {{/ categories}}
+
+    </div>
+</div>
+
+{{#js}}
+    require(['jquery', 'theme_boost/loader'], function($) {
+    $('#faq-{{uniqid}} li:first-child a').tab('show');
+    });
+
+{{/js}}
