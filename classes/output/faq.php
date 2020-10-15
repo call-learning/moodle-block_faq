@@ -65,8 +65,9 @@ class faq implements renderable, templatable {
             foreach ($tagcats as $tagcat) {
                 $categorynode = $tagcat->nextSibling;
                 $questions = [];
-                while ($categorynode && $categorynode->tagName != 'h4') {
-                    if ($categorynode->tagName == 'h5') {
+                while ($categorynode
+                    && !( $categorynode->nodeType == XML_ELEMENT_NODE && $categorynode->tagName == 'h4')) {
+                    if ( $categorynode->nodeType == XML_ELEMENT_NODE  && $categorynode->tagName == 'h5') {
                         $questionnode = $categorynode->nextSibling;
 
                         $question = (object) [
@@ -74,7 +75,9 @@ class faq implements renderable, templatable {
                             'answer' => '',
                             'id' => \html_writer::random_id('qu')
                         ];
-                        while ($questionnode && $questionnode->tagName != 'h5' && $questionnode->tagName != 'h4') {
+                        while ($questionnode
+                            && !($questionnode->nodeType == XML_ELEMENT_NODE
+                                && ($questionnode->tagName == 'h5' || $questionnode->tagName == 'h4'))) {
                             $question->answer .= $questionnode->ownerDocument->saveXML($questionnode);
                             $questionnode = $questionnode->nextSibling;
                         }
