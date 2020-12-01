@@ -48,13 +48,18 @@ class block_faq_edit_form extends block_edit_form {
             get_string('config:text_help', 'block_faq'),
             $editoroptions);
         $mform->addRule('config_text', null, 'required', null, 'client');
-        $mform->setType('config_text', PARAM_RAW); // XSS is prevented when printing the block contents and serving files
+        $mform->setType('config_text', PARAM_RAW); // XSS is prevented when printing the block contents and serving files.
     }
 
-    function set_data($defaults) {
+    /**
+     * Set data
+     *
+     * @param array|stdClass $defaults
+     */
+    public function set_data($defaults) {
         if (!empty($this->block->config) && is_object($this->block->config)) {
             $text = $this->block->config->text;
-            $draftid_editor = file_get_submitted_draft_itemid('config_text');
+            $draftideditor = file_get_submitted_draft_itemid('config_text');
             if (empty($text)) {
                 $currenttext = '';
             } else {
@@ -62,18 +67,19 @@ class block_faq_edit_form extends block_edit_form {
             }
             $defaults->config_text['text'] =
                 file_prepare_draft_area(
-                    $draftid_editor,
+                    $draftideditor,
                     $this->block->context->id,
                     'block_faq',
                     'content', 0,
                     array('subdirs' => true),
                     $currenttext);
-            $defaults->config_text['itemid'] = $draftid_editor;
+            $defaults->config_text['itemid'] = $draftideditor;
             $defaults->config_text['format'] = FORMAT_HTML;
         } else {
             $text = '';
         }
 
+        // TODO change this (see block_mcms).
         // Have to delete text here, otherwise parent::set_data will empty content.
         // of editor.
         unset($this->block->config->text);

@@ -29,6 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Class block_faq
  *
+ * @package    block_faq
  * @copyright 2020 - CALL Learning - Laurent David <laurent@call-learning>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -111,10 +112,10 @@ class block_faq extends block_base {
 
     /**
      * Serialize and store config data
+     * @param mixed $data
+     * @param false $nolongerused
      */
-    function instance_config_save($data, $nolongerused = false) {
-        global $DB;
-
+    public function instance_config_save($data, $nolongerused = false) {
         $config = clone($data);
         // Move embedded files into a proper filearea and adjust HTML links to match.
         // config->text is now just a string.
@@ -129,8 +130,13 @@ class block_faq extends block_base {
 
         parent::instance_config_save($config, $nolongerused);
     }
-    function hide_header() {
+
+    /**
+     * Hide header
+     *
+     * @return bool
+     */
+    public function hide_header() {
         return true;
     }
-
 }

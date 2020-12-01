@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use DOMDocument;
 use DOMXPath;
+use html_writer;
 use renderable;
 use renderer_base;
 use templatable;
@@ -39,6 +40,9 @@ use templatable;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class faq implements renderable, templatable {
+    /**
+     * Category is H4, Question is H5, rest is answers
+     */
     const XPATH_ALL_CATEGORIES = '//h4';
     /**
      * @var array orgs
@@ -50,15 +54,44 @@ class faq implements renderable, templatable {
      * Parse the FAQ text so we have a category per h3 level, a question per h4 level and the rest
      * stays as html.
      *
-     * @param text $text
-     * @param int $blockcontextid
-     * @throws \coding_exception
+     * @param string $text
      * @throws \moodle_exception
      */
     public function __construct($text) {
+        $this->categories = self::convert_text_to_faq_categories($text);
+    }
+
+    /**
+     * Export the faq entity
+     *
+     * @param renderer_base $renderer
+     * @return array|\stdClass
+     */
+    public function export_for_template(renderer_base $renderer) {
+        $exportedvalue = [
+            'categories' => array_values((array) $this->categories),
+            'count' => count($this->categories)
+        ];
+        return $exportedvalue;
+    }
+
+    /**
+     * Convert test to FAQ list of categories
+     *
+     * H5: the category name
+     * H4: the question
+     * Any other until next H4, the answer.
+     * ...
+     * and so on
+     *
+     * @param string $text
+     * @return array
+     * @throws \moodle_exception
+     */
+    public static function convert_text_to_faq_categories($text) {
         $domdocument = new DOMDocument();
-        @$domdocument->loadHTML('<?xml encoding="UTF-8">'.$text);
-        $this->categories = [];
+        @$domdocument->loadHTML('<?xml encoding="UTF-8">' . $text);
+        $categories = [];
         if ($domdocument) {
             $xpath = new DOMXPath($domdocument);
             $tagcats = $xpath->query(self::XPATH_ALL_CATEGORIES);
@@ -66,14 +99,14 @@ class faq implements renderable, templatable {
                 $categorynode = $tagcat->nextSibling;
                 $questions = [];
                 while ($categorynode
-                    && !( $categorynode->nodeType == XML_ELEMENT_NODE && $categorynode->tagName == 'h4')) {
-                    if ( $categorynode->nodeType == XML_ELEMENT_NODE  && $categorynode->tagName == 'h5') {
+                    && !($categorynode->nodeType == XML_ELEMENT_NODE && $categorynode->tagName == 'h4')) {
+                    if ($categorynode->nodeType == XML_ELEMENT_NODE && $categorynode->tagName == 'h5') {
                         $questionnode = $categorynode->nextSibling;
 
                         $question = (object) [
                             'text' => $categorynode->textContent,
                             'answer' => '',
-                            'id' => \html_writer::random_id('qu')
+                            'id' => html_writer::random_id('qu')
                         ];
                         while ($questionnode
                             && !($questionnode->nodeType == XML_ELEMENT_NODE
@@ -93,27 +126,14 @@ class faq implements renderable, templatable {
                 }
 
                 $xpath->query('//img/@src', $tagcat);
-                $this->categories[] = (object) [
-                    'id' => \html_writer::random_id('cat'),
+                $categories[] = (object) [
+                    'id' => html_writer::random_id('cat'),
                     'title' => $tagcat->textContent,
                     'questions' => $questions,
                     'imageurl' => $imagesrc
                 ];
             }
         }
-    }
-
-    /**
-     * Export the faq entity
-     *
-     * @param renderer_base $renderer
-     * @return array|\stdClass
-     */
-    public function export_for_template(renderer_base $renderer) {
-        $exportedvalue = [
-            'categories' => array_values((array) $this->categories),
-            'count' => count($this->categories)
-        ];
-        return $exportedvalue;
+        return $categories;
     }
 }
