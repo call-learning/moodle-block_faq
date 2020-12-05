@@ -18,7 +18,7 @@
  * Privacy Subsystem implementation for block_faq.
  *
  * @package    block_faq
- * @copyright 2020 - CALL Learning - Laurent David <laurent@call-learning>
+ * @copyright 2020 - CALL Learning - Laurent David <laurent@call-learning.fr>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace block_faq\privacy;
@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Privacy Subsystem for block_faq implementing null_provider.
  *
- * @copyright 2020 - CALL Learning - Laurent David <laurent@call-learning>
+ * @copyright 2020 - CALL Learning - Laurent David <laurent@call-learning.fr>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements \core_privacy\local\metadata\null_provider {

@@ -18,7 +18,7 @@
  * Version details
  *
  * @package block_faq
- * @copyright 2020 - CALL Learning - Laurent David <laurent@call-learning>
+ * @copyright 2020 - CALL Learning - Laurent David <laurent@call-learning.fr>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -27,12 +27,13 @@ defined('MOODLE_INTERNAL') || die();
 $capabilities = array(
 
     'block/faq:myaddinstance' => array(
+        'riskbitmask' => RISK_SPAM | RISK_XSS,
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => array(
-            'user' => CAP_ALLOW
+            'manager' => CAP_ALLOW, // We don't want anyone to add this kind of block anywhere.
+            'guest' => CAP_PREVENT
         ),
-        'clonepermissionsfrom' => 'moodle/my:manageblocks'
     ),
 
     'block/faq:addinstance' => array(
